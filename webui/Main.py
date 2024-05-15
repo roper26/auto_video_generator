@@ -378,6 +378,7 @@ with middle_panel:
         ]
         video_sources = [
             (tr("Pexels"), "pexels"),
+            (tr("图文视频"), "图文视频"),
             (tr("Local file"), "local"),
             (tr("TikTok"), "douyin"),
             (tr("Bilibili"), "bilibili"),

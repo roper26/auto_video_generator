@@ -301,6 +301,53 @@ Please note that you must use English for generating video search terms; Chinese
     return search_terms
 
 
+def generate_picture_term(video_subject: str, subtitle_str: str, amount: int = 5) -> List[str]:
+    prompt = f"""
+# Role: Picture Search Term Generator
+
+## Goals:
+Generate one search term for stock picture, depending on the subject of a video, and one subtite sentence.
+
+## Constrains:
+1. the search term are to be returned as a string.
+2. search term should consist of 1-3 words, should relate to the subtitle and subtitle str.
+3. you must only return one search term. you must not return anything else. you must not return the script.
+4. the search term must be related to the subject of the video.
+5. reply with english search terms only.
+
+## Output Example:
+"search term 1"
+
+## Context:
+### Video Subject
+{video_subject}
+
+### subtitle_str
+{subtitle_str}
+
+Please note that you must use English for generating video search terms; Chinese is not accepted.
+""".strip()
+
+    logger.info(f"subject: {video_subject}, subtitle_str:{subtitle_str}")
+    # logger.debug(f"prompt: \n{prompt}")
+    response = _generate_response(prompt)
+    search_term = ""
+
+    try:
+        search_term = response
+        print(search_term)
+        if not isinstance(search_term, str) :
+            raise ValueError("response is not a list of strings.")
+
+    except (json.JSONDecodeError, ValueError):
+        # logger.warning(f"gpt returned an unformatted response. attempting to clean...")
+        # Attempt to extract list-like string and convert to list
+        return video_subject
+
+    logger.success(f'completed: \n{search_term}')
+    return search_term
+
+
 if __name__ == "__main__":
     video_subject = "生命的意义是什么"
     script = generate_script(video_subject=video_subject, language="zh-CN", paragraph_number=1)

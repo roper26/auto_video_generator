@@ -176,6 +176,36 @@ def download_videos(task_id: str,
     logger.success(f"downloaded {len(video_paths)} videos")
     return video_paths
 
+def search_picture(search_term: str, video_aspect: VideoAspect = VideoAspect.portrait,):
+    # search_term = "financial stability"
+    aspect = VideoAspect(video_aspect)
+    video_orientation = aspect.name
+    video_width, video_height = aspect.to_resolution()
+    headers = {
+        "Authorization": round_robin_api_key()
+    }
+    proxies = config.pexels.get("proxies", None)
+    # Build URL
+    url_params = {
+        "query": search_term,
+        "per_page": 20,
+        "orientation": video_orientation
+    }
+    query_url = f"https://api.pexels.com/v1/search?{urlencode(url_params)}"
+    logger.info(f"searching videos: {query_url}, with proxies: {proxies}")
+    try:
+        r = requests.get(query_url, headers=headers, proxies=proxies, verify=False, timeout=(30, 60))
+        response = r.json()
+        photos = response.get("photos", [])
+        # photos = [photo["url"]for photo in photos if photo.get("url", None)]
+        photos = [photo["src"]["original"] for photo in photos if photo.get("src", None)]
+        if len(photos) > 0:
+            return random.choice(photos)
+        return None
+    except Exception as e:
+        logger.error(f"failed to search videos: {str(e)}")
+    
+    return None
 
 if __name__ == "__main__":
     download_videos("test123", ["cat"], audio_duration=100)

@@ -136,6 +136,12 @@ def start(task_id, params: VideoParams):
                                                      audio_duration=audio_duration * params.video_count,
                                                      max_clip_duration=max_clip_duration,
                                                      )
+    final_video_paths = []
+    combined_video_paths = []
+
+    if params.video_source == '图文视频':
+        pass
+    
     if not downloaded_videos:
         sm.state.update_task(task_id, state=const.TASK_STATE_FAILED)
         logger.error(
@@ -144,8 +150,7 @@ def start(task_id, params: VideoParams):
 
     sm.state.update_task(task_id, state=const.TASK_STATE_PROCESSING, progress=50)
 
-    final_video_paths = []
-    combined_video_paths = []
+    
     video_concat_mode = params.video_concat_mode
     if params.video_count > 1:
         video_concat_mode = VideoConcatMode.random
